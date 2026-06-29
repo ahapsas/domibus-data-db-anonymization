@@ -1,19 +1,18 @@
 ALTER SESSION SET CONTAINER = FREEPDB1;
 ALTER SESSION SET CURRENT_SCHEMA = DOMIBUS_ADMIN;
-
 -- *********************************************************************
 -- Update Database Script
 -- *********************************************************************
--- Change Log: src/main/resources/db/releases/5.1.9/partitioning/oracle/5.1.9-changelog-partitioning.xml
--- Ran at: 5/05/26 15:08
--- Against: null@offline:oracle?version=11.2.0&changeLogFile=target/liquibase/changelog-1.18-partitioning.oracle
+-- Change Log: src/main/resources/db/releases/5.0.8/partitioning/oracle/5.0.8-changelog-partitioning.xml
+-- Ran at: 26/06/26 15:13
+-- Against: null@offline:oracle?version=11.2.0&changeLogFile=target/liquibase/changelog-1.19-partitioning.oracle
 -- Liquibase version: 4.17.0
 -- *********************************************************************
 
--- Changeset src/main/resources/db/releases/5.1.9/partitioning/oracle/../../../../common/changelog-before-migration-statements-v2.xml::EDELIVERY-12286_stop_on_error_oracle::Gabriel Maier
+-- Changeset src/main/resources/db/releases/5.0.8/partitioning/oracle/../../../../common/changelog-before-migration-statements-v2.xml::EDELIVERY-12286_stop_on_error_oracle::Gabriel Maier
 WHENEVER SQLERROR EXIT SQL.SQLCODE ROLLBACK;
 
--- Changeset src/main/resources/db/releases/5.1.9/partitioning/oracle/../../../../common/changelog-before-migration-statements-v2.xml::EDELIVERY-12287_assert_previous_migration_succeeded-v2-oracle::Gabriel Maier
+-- Changeset src/main/resources/db/releases/5.0.8/partitioning/oracle/../../../../common/changelog-before-migration-statements-v2.xml::EDELIVERY-12287_assert_previous_migration_succeeded-v2-oracle::Gabriel Maier
 create or replace PROCEDURE ASSERT_DB_VERSION_IS(in_expected_versions IN VARCHAR2) AS
     actual_version VARCHAR2(30);
     actual_creation_time TIMESTAMP;
@@ -103,7 +102,7 @@ BEGIN
 END is_partitioned;
 /
 
--- Changeset src/main/resources/db/releases/5.1.9/partitioning/oracle/5.1.9-changelog-partitioning.xml::Partition tables::idragusa
+-- Changeset src/main/resources/db/releases/5.0.8/partitioning/oracle/5.0.8-changelog-partitioning.xml::Partition tables::idragusa
 CREATE OR REPLACE FUNCTION generate_partition_id(p_date IN DATE)
     RETURN NUMBER IS
     p_id NUMBER;

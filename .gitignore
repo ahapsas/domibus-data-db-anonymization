@@ -7,3 +7,9 @@ __pycache__/
 # Operating system files
 .DS_Store
 Thumbs.db
+
+# Configuration files
+.env
+full.par
+*.log
+*.dmp

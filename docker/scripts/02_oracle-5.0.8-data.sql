@@ -3,16 +3,16 @@ ALTER SESSION SET CURRENT_SCHEMA = DOMIBUS_ADMIN;
 -- *********************************************************************
 -- Update Database Script
 -- *********************************************************************
--- Change Log: src/main/resources/db/releases/5.1.9/5.1.9-changelog-data.xml
--- Ran at: 5/05/26 15:08
--- Against: null@offline:oracle?version=11.2.0&changeLogFile=target/liquibase/changelog-1.18-data.oracle
+-- Change Log: src/main/resources/db/releases/5.0.8/5.0.8-changelog-data.xml
+-- Ran at: 26/06/26 15:13
+-- Against: null@offline:oracle?version=11.2.0&changeLogFile=target/liquibase/changelog-1.19-data.oracle
 -- Liquibase version: 4.17.0
 -- *********************************************************************
 
--- Changeset src/main/resources/db/releases/5.1.9/../../common/changelog-before-migration-statements-v2.xml::EDELIVERY-12286_stop_on_error_oracle::Gabriel Maier
+-- Changeset src/main/resources/db/releases/5.0.8/../../common/changelog-before-migration-statements-v2.xml::EDELIVERY-12286_stop_on_error_oracle::Gabriel Maier
 WHENEVER SQLERROR EXIT SQL.SQLCODE ROLLBACK;
 
--- Changeset src/main/resources/db/releases/5.1.9/../../common/changelog-before-migration-statements-v2.xml::EDELIVERY-12287_assert_previous_migration_succeeded-v2-oracle::Gabriel Maier
+-- Changeset src/main/resources/db/releases/5.0.8/../../common/changelog-before-migration-statements-v2.xml::EDELIVERY-12287_assert_previous_migration_succeeded-v2-oracle::Gabriel Maier
 create or replace PROCEDURE ASSERT_DB_VERSION_IS(in_expected_versions IN VARCHAR2) AS
     actual_version VARCHAR2(30);
     actual_creation_time TIMESTAMP;
@@ -102,43 +102,35 @@ BEGIN
 END is_partitioned;
 /
 
--- Changeset src/main/resources/db/releases/5.1.9/5.1.9-changelog-data.xml::EDELIVERY-2144_1::thomas dussart
+-- Changeset src/main/resources/db/releases/5.0.8/5.0.8-changelog-data.xml::EDELIVERY-2144_1::thomas dussart
 INSERT INTO TB_USER_ROLE (ID_PK, ROLE_NAME) VALUES ('197001010000000001', 'ROLE_ADMIN');
 
 INSERT INTO TB_USER_ROLE (ID_PK, ROLE_NAME) VALUES ('197001010000000002', 'ROLE_USER');
 
--- Changeset src/main/resources/db/releases/5.1.9/5.1.9-changelog-data.xml::EDELIVERY-7368::ionperpegel
-INSERT INTO TB_D_MSH_ROLE (ID_PK, ROLE) VALUES ('197001010000000001', 'SENDING');
+-- Changeset src/main/resources/db/releases/5.0.8/5.0.8-changelog-data.xml::EDELIVERY-7836-insert::idragusa
+INSERT INTO TB_USER_MESSAGE (ID_PK) VALUES ('19700101');
 
-INSERT INTO TB_D_MSH_ROLE (ID_PK, ROLE) VALUES ('197001010000000002', 'RECEIVING');
-
--- Changeset src/main/resources/db/releases/5.1.9/5.1.9-changelog-data.xml::EDELIVERY-7836-insert::idragusa
-INSERT INTO TB_USER_MESSAGE (ID_PK, MSH_ROLE_ID_FK) VALUES ('19700101', '197001010000000001');
-
--- Changeset src/main/resources/db/releases/5.1.9/5.1.9-changelog-data.xml::EDELIVERY-8503_2::ion perpegel
+-- Changeset src/main/resources/db/releases/5.0.8/5.0.8-changelog-data.xml::EDELIVERY-8503_2::ion perpegel
 INSERT INTO TB_LOCK (ID_PK, LOCK_KEY) VALUES ('197001010000000001', 'bootstrap-synchronization.lock');
 
--- Changeset src/main/resources/db/releases/5.1.9/5.1.9-changelog-data.xml::EDELIVERY-9451::ion perpegel
+-- Changeset src/main/resources/db/releases/5.0.8/5.0.8-changelog-data.xml::EDELIVERY-9451::ion perpegel
 INSERT INTO TB_LOCK (ID_PK, LOCK_KEY) VALUES ('197001010000000002', 'scheduler-synchronization.lock');
 
--- Changeset src/main/resources/db/releases/5.1.9/5.1.9-changelog-data.xml::insert_last_pk_in_TB_EARCHIVE_START::gautifr
+-- Changeset src/main/resources/db/releases/5.0.8/5.0.8-changelog-data.xml::insert_last_pk_in_TB_EARCHIVE_START::gautifr
 INSERT INTO TB_EARCHIVE_START (ID_PK, LAST_PK_USER_MESSAGE, DESCRIPTION) VALUES ('1', '000101000000000000', 'START ID_PK FOR CONTINUOUS EXPORT');
 
 INSERT INTO TB_EARCHIVE_START (ID_PK, LAST_PK_USER_MESSAGE, DESCRIPTION) VALUES ('2', '000101000000000000', 'START ID_PK FOR SANITY EXPORT');
 
--- Changeset src/main/resources/db/releases/5.1.9/5.1.9-changelog-data.xml::EDELIVERY-11903::Cosmin Baciu
-INSERT INTO TB_LOCK (ID_PK, LOCK_KEY) VALUES ('197001010000000003', 'keystore-synchronization.lock');
-
--- Changeset src/main/resources/db/releases/5.1.9/../../common/changelog-version-inserts.xml::EDELIVERY-7668-oracle::Catalin Enache
+-- Changeset src/main/resources/db/releases/5.0.8/../../common/changelog-version-inserts.xml::EDELIVERY-7668-oracle::Catalin Enache
 MERGE INTO TB_VERSION
             USING dual
-            ON (VERSION = '5.1.9')
+            ON (VERSION = '5.0.8')
             WHEN MATCHED
                 THEN
                 UPDATE
-                SET BUILD_TIME    = '2026-05-05 13:08',
+                SET BUILD_TIME    = '2026-06-26 13:12',
                     CREATION_TIME = SYS_EXTRACT_UTC(CURRENT_TIMESTAMP)
             WHEN NOT MATCHED
                 THEN
                 INSERT (VERSION, BUILD_TIME, CREATION_TIME)
-                VALUES ('5.1.9', '2026-05-05 13:08', SYS_EXTRACT_UTC(CURRENT_TIMESTAMP));
+                VALUES ('5.0.8', '2026-06-26 13:12', SYS_EXTRACT_UTC(CURRENT_TIMESTAMP));

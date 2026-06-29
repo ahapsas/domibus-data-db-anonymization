@@ -1,14 +1,24 @@
 services:
-  oracle-db:
+  # 1. SIMULATED PRODUCTION DATABASE
+  domibus_prod_db:
     image: gvenzl/oracle-free:latest
-    container_name: domibus_oracle_db
+    container_name: domibus_prod_db
     ports:
       - "1521:1521"
     environment:
-      - ORACLE_PASSWORD=YourSecurePassword123!
+      - ORACLE_PASSWORD=ProdSysPass123
     volumes:
-      - oracle-data:/opt/oracle/oradata
+      # Relative to where docker-compose.yml lives (inside docker/ folder)
       - ./scripts:/container-entrypoint-initdb.d
+    restart: always
 
-volumes:
-  oracle-data:
+  # 2. ANONYMIZATION SANDBOX DATABASE
+  domibus_anon_db:
+    image: gvenzl/oracle-free:latest
+    container_name: domibus_anon_db
+    ports:
+      - "1522:1521"
+    environment:
+      - ORACLE_PASSWORD=AnonSysPass123
+    # No volumes here, it starts fresh and receives data via impdp
+    restart: always

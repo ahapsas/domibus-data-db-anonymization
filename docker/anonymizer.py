@@ -9,7 +9,7 @@ DB_PASS = "DomibusPass123"
 DB_DSN = "localhost:1521/FREEPDB1"
 
 def generate_random_string(length):
-    # Διορθώθηκε: To random.choices παίρνει k=length, αλλά το "".join() παίρνει το αποτέλεσμα ως positional
+    # Fixed: random.choices takes k=length, but "".join() takes the result as a positional argument
     choices_list = random.choices(string.ascii_uppercase + string.digits, k=length)
     return ''.join(choices_list)
 
@@ -32,26 +32,26 @@ def run_anonymization():
     with open("mapping.json", "r", encoding="utf-8") as f:
         config = json.load(f)
         
-    print("🔄 Σύνδεση με την Oracle...")
+    print("🔄 Connecting to Oracle...")
     connection = oracledb.connect(user=DB_USER, password=DB_PASS, dsn=DB_DSN)
     cursor = connection.cursor()
     
     try:
-        # --- 1. ΕΚΤΕΛΕΣΗ TRUNCATES ---
-        print("\n🗑️  Εκκίνηση Καθαρισμού (Truncates/Deletes)...")
+        # --- 1. EXECUTE TRUNCATES ---
+        print("\n🗑️  Starting Cleanup Process (Truncates/Deletes)...")
         for table in config.get("truncates", []):
             try:
                 if "QRTZ" in table:
                     cursor.execute(f"DELETE FROM {table}")
                 else:
                     cursor.execute(f"TRUNCATE TABLE {table}")
-                print(f"  ↳ ✅ Καθαρίστηκε ο πίνακας: {table}")
+                print(f"  ↳ ✅ Cleared table: {table}")
             except Exception as e:
-                print(f"  ↳ ⚠️  Παράκαμψη {table}: {e}")
+                print(f"  ↳ ⚠️  Skipping {table}: {e}")
 
-        # --- 2. ΕΚΤΕΛΕΣΗ ΠΙΝΑΚΩΝ ---
+        # --- 2. EXECUTE TABLE PROCESSING ---
         for table_name, table_config in config.get("tables", {}).items():
-            print(f"\n📦 Επεξεργασία πίνακα: {table_name}")
+            print(f"\n📦 Processing table: {table_name}")
             
             where_clause = table_config.get("where_clause", "")
             where_sql = f" WHERE {where_clause}" if where_clause else ""
@@ -64,10 +64,10 @@ def run_anonymization():
                     cursor.execute(f"SELECT rowid FROM {table_name}{where_sql}")
                     rows = cursor.fetchall()
                 except Exception as e:
-                    print(f"  ⚠️  Αδυναμία ανάγνωσης πίνακα {table_name}: {e}")
+                    print(f"  ⚠️  Unable to read table {table_name}: {e}")
                     continue
                 
-                print(f"  ↳ 🔄 Δυναμικό update σε {len(rows)} γραμμές...")
+                print(f"  ↳ 🔄 Dynamic update on {len(rows)} rows...")
                 for row in rows:
                     row_id = row[0]
                     set_clauses = []
@@ -120,13 +120,13 @@ def run_anonymization():
                 if set_clauses:
                     sql = f"UPDATE {table_name} SET {', '.join(set_clauses)}{where_sql}"
                     cursor.execute(sql)
-                    print(f"  ↳ 🚀 Bulk Updated {cursor.rowcount} γραμμές.")
+                    print(f"  ↳ 🚀 Bulk Updated {cursor.rowcount} rows.")
                     
         connection.commit()
-        print("\n🎉 ΟΛΟΚΛΗΡΩΘΗΚΕ ΤΟ MASTER ANONYMIZATION PIPELINE ΜΕ ΕΠΙΤΥΧΙΑ!")
+        print("\n🎉 MASTER ANONYMIZATION PIPELINE COMPLETED SUCCESSFULLY!")
 
     except Exception as e:
-        print(f"❌ Κρίσιμο Σφάλμα: {e}")
+        print(f"❌ Critical Error: {e}")
         connection.rollback()
     finally:
         cursor.close()
