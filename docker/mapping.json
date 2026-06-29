@@ -1,0 +1,66 @@
+{
+  "truncates": [
+    "QRTZ_SIMPLE_TRIGGERS",
+    "QRTZ_CRON_TRIGGERS",
+    "QRTZ_TRIGGERS",
+    "QRTZ_JOB_DETAILS",
+    "TB_ERROR_LOG",
+    "TB_CERTIFICATE",
+    "TB_TRUSTSTORE"
+  ],
+  "tables": {
+    "TB_USER": {
+      "where_clause": "USER_NAME NOT IN ('admin','default_admin')",
+      "columns": {
+        "USER_EMAIL": { "method": "CONCAT_ID", "prefix": "u", "suffix": "@d.l" },
+        "USER_NAME": { "method": "CONCAT_ID", "prefix": "u", "suffix": "" },
+        "USER_PASSWORD": { "method": "STATIC_VALUE", "value": "M" }
+      }
+    },
+    "TB_AUTHENTICATION_ENTRY": {
+      "where_clause": "USERNAME NOT IN ('admin','default_admin')",
+      "columns": {
+        "USERNAME": { "method": "RANDOM_STRING", "length": 10 },
+        "PASSWD": { "method": "STATIC_VALUE", "value": "M" }
+      }
+    },
+    "TB_D_MPC": {
+      "columns": {
+        "VALUE": { "method": "REPLACE_SUBSTRINGS", "replacements": { "eu_ics2_c2t": "proj_CONF", "eu_ics2_t2c": "proj_CONF" } }
+      }
+    },
+    "TB_D_PARTY": {
+      "columns": {
+        "VALUE": { "method": "MASK_EORI_OR_EMAIL" }
+      }
+    },
+    "TB_D_SERVICE": {
+      "columns": {
+        "VALUE": { "method": "RANDOM_STRING_DYNAMIC_LENGTH" }
+      }
+    },
+    "TB_PM_PARTY": {
+      "columns": {
+        "NAME": { "method": "RANDOM_STRING", "length": 10 },
+        "ENDPOINT": { "method": "STATIC_VALUE", "value": "http://masked-endpoint.internal:1111/domibus/services/msh/" }
+      }
+    },
+    "TB_PM_PARTY_AUD": {
+      "columns": {
+        "NAME": { "method": "RANDOM_STRING", "length": 10 },
+        "ENDPOINT": { "method": "STATIC_VALUE", "value": "http://masked-endpoint.internal:7010/domibus/services/msh/" }
+      }
+    },
+    "TB_USER_MESSAGE_RAW": { "columns": { "RAW_XML": { "method": "EMPTY_BLOB" } } },
+    "TB_SIGNAL_MESSAGE_RAW": { "columns": { "RAW_XML": { "method": "EMPTY_BLOB" } } },
+    "TB_RECEIPT": { "columns": { "RAW_XML": { "method": "EMPTY_BLOB" } } },
+    "TB_PART_INFO": { "columns": { "BINARY_DATA": { "method": "EMPTY_BLOB" } } },
+    "TB_PM_CONFIGURATION_RAW": { "columns": { "XML": { "method": "EMPTY_BLOB" } } },
+    "TB_PM_CONFIGURATION_RAW_AUD": { "columns": { "XML": { "method": "EMPTY_BLOB" } } },
+    "TB_PM_PARTY_IDENTIFIER": {
+      "columns": {
+        "PARTY_ID": { "method": "MASK_EORI_OR_EMAIL" }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+services:
+  oracle-db:
+    image: gvenzl/oracle-free:latest
+    container_name: domibus_oracle_db
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PASSWORD=YourSecurePassword123!
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - ./scripts:/container-entrypoint-initdb.d
+
+volumes:
+  oracle-data:
