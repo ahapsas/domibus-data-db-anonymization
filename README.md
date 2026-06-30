@@ -1,16 +1,20 @@
 # Domibus e-Delivery Database Anonymization Pipeline
 
-An enterprise-grade, data-driven anonymization engine built to mask sensitive production data inside the official European Commission **Domibus 5.0.8 (e-Delivery)** Oracle Database schema. It should work at least till 5.1.9 version.
+[cite_start]An enterprise-grade, data-driven anonymization engine built to mask sensitive production data inside the official European Commission Domibus 5.0.8 (e-Delivery) Oracle Database schema[cite: 1, 2]. [cite_start]Designed to be completely adaptive, this pipeline maintains compatibility up to version 5.1.9[cite: 3].
 
 ## Features
-- **Dockerized Environment:** Spins up an Oracle Database 23 Free container pre-configured with the official Domibus schema, components, and partitioning.
-- **Dynamic Masking Engine:** A Python execution script driven by a `mapping.json` configuration file, eliminating hardcoded SQL scripts.
-- **Advanced Masking Techniques:** Supports deterministic static updates, structural row-by-row random string generation (`DBMS_RANDOM` equivalent), and binary payload (BLOB) wiping.
+* [cite_start]**Dockerized Dual Environments**: Spins up two isolated Oracle Database 23ai Free containers representing a mock Production container (`domibus_prod_db`) and a secure Sandbox container (`domibus_anon_db`)[cite: 5, 29, 69, 86].
+* [cite_start]**Dynamic Masking Engine**: Powered completely by a Python execution script driven by a `mapping.json` configuration file, eliminating brittle, hardcoded SQL scripts[cite: 6, 7].
+* [cite_start]**Advanced Masking & Speed**: Utilizes the high-performance `oracledb` Thin Driver to perform rapid relational array bulk updates[cite: 12, 41]. [cite_start]Supports deterministic updates, structural alphanumeric random string generation, background scheduler trimming, and binary payload (BLOB) wiping[cite: 8, 63].
 
-## Architecture
-1. **Infrastructure:** `docker-compose` maps official SQL initialization scripts directly into the container startup context (`FREEPDB1` Pluggable Database).
-2. **Configuration:** `mapping.json` isolates the data schema rules from the logical engine code.
-3. **Execution:** `anonymizer.py` utilizes the modern `oracledb` Thin Driver to generate and run high-performance bulk and iterative DML queries.
+---
+
+## System Architecture
+
+The pipeline isolates data operations across two independent database environments to prevent any accidental leakage or mutation of raw production rows:
+
+```text
+[Production DB: Port 1521] ──(expdp data pump)──> [Host File System] ──(impdp target)──> [Sandbox DB: Port 1522] ──(anonymizer.py)──> [Safe Test Data]
 
 ## Quick Start
 1. Start the database context:
