@@ -20,5 +20,5 @@ services:
       - "1522:1521"
     environment:
       - ORACLE_PASSWORD=AnonSysPass123
-    # No volumes here, it starts fresh and receives data via impdp
+    # No needed volumes, it starts fresh and receives data via impdp
     restart: always

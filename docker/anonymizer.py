@@ -1,3 +1,11 @@
+# This script is designed to anonymize sensitive data in an Oracle Domibus database 
+# based on the configuration provided in the mapping.json file. 
+# It connects to the database, performs truncation or deletion of specified tables,
+# deleting or anonymizing sensitive data in other tables, and updates specific columns 
+# with anonymized values according to the defined methods. 
+
+# If you want to run this script alone, execute it by: python anonymizer.py
+
 import json
 import random
 import string
@@ -9,7 +17,6 @@ DB_PASS = "DomibusPass123"
 DB_DSN = "localhost:1521/FREEPDB1"
 
 def generate_random_string(length):
-    # Fixed: random.choices takes k=length, but "".join() takes the result as a positional argument
     choices_list = random.choices(string.ascii_uppercase + string.digits, k=length)
     return ''.join(choices_list)
 
@@ -45,13 +52,13 @@ def run_anonymization():
                     cursor.execute(f"DELETE FROM {table}")
                 else:
                     cursor.execute(f"TRUNCATE TABLE {table}")
-                print(f"  ↳ ✅ Cleared table: {table}")
+                print(f"  ↳ Cleared table: {table}")
             except Exception as e:
-                print(f"  ↳ ⚠️  Skipping {table}: {e}")
+                print(f"  ↳ Skipping {table}: {e}")
 
         # --- 2. EXECUTE TABLE PROCESSING ---
         for table_name, table_config in config.get("tables", {}).items():
-            print(f"\n📦 Processing table: {table_name}")
+            print(f"\n Processing table: {table_name}")
             
             where_clause = table_config.get("where_clause", "")
             where_sql = f" WHERE {where_clause}" if where_clause else ""
@@ -64,10 +71,10 @@ def run_anonymization():
                     cursor.execute(f"SELECT rowid FROM {table_name}{where_sql}")
                     rows = cursor.fetchall()
                 except Exception as e:
-                    print(f"  ⚠️  Unable to read table {table_name}: {e}")
+                    print(f"  Unable to read table {table_name}: {e}")
                     continue
                 
-                print(f"  ↳ 🔄 Dynamic update on {len(rows)} rows...")
+                print(f"  ↳ Dynamic update on {len(rows)} rows...")
                 for row in rows:
                     row_id = row[0]
                     set_clauses = []
@@ -120,13 +127,13 @@ def run_anonymization():
                 if set_clauses:
                     sql = f"UPDATE {table_name} SET {', '.join(set_clauses)}{where_sql}"
                     cursor.execute(sql)
-                    print(f"  ↳ 🚀 Bulk Updated {cursor.rowcount} rows.")
+                    print(f"  ↳ Bulk Updated {cursor.rowcount} rows.")
                     
         connection.commit()
-        print("\n🎉 MASTER ANONYMIZATION PIPELINE COMPLETED SUCCESSFULLY!")
+        print("\n THE ANONYMIZATION PROCESS COMPLETED SUCCESSFULLY!")
 
     except Exception as e:
-        print(f"❌ Critical Error: {e}")
+        print(f" Critical Error: {e}")
         connection.rollback()
     finally:
         cursor.close()

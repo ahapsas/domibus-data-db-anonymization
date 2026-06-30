@@ -4,15 +4,16 @@
 ENV_FILE=".env"
 
 if [ -f "$ENV_FILE" ]; then
-    echo "⚙️ Loading configuration from $ENV_FILE..."
+    echo "Loading configuration from $ENV_FILE..."
     source "$ENV_FILE"
 else
-    echo "❌ Error: Configuration file $ENV_FILE not found!"
+    echo "Error: Configuration file $ENV_FILE not found!"
     exit 1
 fi
 
 # Set dynamic variables
-HOURS=${HOURS_TO_SYNC:-10}
+HOURS=${HOURS_TO_SYNC:-1}
+# set hour limit to 1 hour
 INT_SYS_PROD_SQL="sys/ProdSysPass123@//localhost:1521/$PDB_NAME as sysdba"
 INT_SYS_ANON_SQL="sys/AnonSysPass123@//localhost:1521/$PDB_NAME as sysdba"
 
@@ -26,11 +27,11 @@ EXPORT_LOG="domibus_export.log"
 IMPORT_LOG="domibus_import.log"
 
 echo "--------------------------------------------------"
-echo "🚀 Starting Data Migration & Anonymization Pipeline"
+echo " Starting Data Migration & Anonymization Pipeline "
 echo "--------------------------------------------------"
 
 # --- STEP 1: GENERATE PARAMETER FILE INSIDE PROD ---
-echo "📦 Generating Data Pump parameter file inside container..."
+echo "Generating Data Pump parameter file inside container..."
 
 docker exec -i domibus_prod_db bash -c "
 cat <<EOF > /tmp/full.par
@@ -56,7 +57,7 @@ EXIT;
 EOF
 
 # --- STEP 2, 3 & 4: TRANSFER AND IMPORT DATA ---
-echo "🔄 Finding default Data Pump directories..."
+echo "Finding default Data Pump directories..."
 
 # Find the exact path where Oracle generated the dmp file in Prod
 PROD_DMP_DIR=$(docker exec -i domibus_prod_db sqlplus -L -s "$INT_SYS_PROD_SQL" <<EOF
@@ -67,10 +68,10 @@ EOF
 )
 PROD_DMP_DIR=$(echo "$PROD_DMP_DIR" | tr -d '\r\n[:space:]')
 
-echo "📤 Exporting raw data from Production DB Container (domibus_prod_db)..."
+echo "Exporting raw data from Production DB Container (domibus_prod_db)..."
 docker exec -i domibus_prod_db expdp \"$EXPDP_CONN AS SYSDBA\" PARFILE=/tmp/full.par DUMPFILE="$DMP_FILE"
 
-echo "🚚 Transferring dump file between containers..."
+echo "Transferring dump file between containers..."
 docker cp domibus_prod_db:"$PROD_DMP_DIR"/"$DMP_FILE" ./"$DMP_FILE"
 
 # Find the exact path for the Anon Container
@@ -89,8 +90,8 @@ rm ./"$DMP_FILE"
 docker exec -u 0 -i domibus_anon_db chown oracle:oinstall "$ANON_DMP_DIR"/"$DMP_FILE"
 docker exec -u 0 -i domibus_anon_db chmod 664 "$ANON_DMP_DIR"/"$DMP_FILE"
 
-echo "🧹 Re-creating Schema User in Anon DB to completely clear metadata..."
-# Κάνουμε drop cascade τον χρήστη και τον ξαναδημιουργούμε με τα απαραίτητα βασικά privileges
+echo "Re-creating Schema User in Anon DB to completely clear metadata..."
+# we drop cascade the user and recreate again with the relevant privileges
 docker exec -i domibus_anon_db sqlplus -L -s "$INT_SYS_ANON_SQL" <<EOF
 SET FEEDBACK OFF VERIFY OFF
 declare
@@ -108,12 +109,11 @@ GRANT UNLIMITED TABLESPACE TO $DB_USER;
 EXIT;
 EOF
 
-echo "📥 Importing data into Anonymization Sandbox DB (domibus_anon_db)..."
-# Επειδή ο χρήστης είναι πλέον άδειος, το impdp θα δημιουργήσει σωστά όλα τα tables/partitions χωρίς συγκρούσεις
+echo "Importing data into Anonymization Sandbox DB (domibus_anon_db)..."
 docker exec -i domibus_anon_db impdp \"$IMPDP_CONN AS SYSDBA\" DUMPFILE="$DMP_FILE" LOGFILE="$IMPORT_LOG"
 
 # --- STEP 5: EXECUTE PYTHON ANONYMIZATION PIPELINE ---
-echo "🧠 Triggering Python Anonymization Engine on Host Port $ANON_PORT..."
+echo "Triggering Python Anonymization Engine on Host Port $ANON_PORT..."
 cd docker
 
 if [ -d ".venv" ]; then
@@ -130,5 +130,5 @@ python anonymizer.py
 cd ..
 
 echo "--------------------------------------------------"
-echo "✅ Pipeline Executed Successfully!"
+echo " Pipeline Executed Successfully! "
 echo "--------------------------------------------------"
