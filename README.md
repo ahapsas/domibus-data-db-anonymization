@@ -1,6 +1,6 @@
 # Domibus e-Delivery Database Anonymization Pipeline
 
-An enterprise-grade, data-driven anonymization engine built to mask sensitive production data inside the official European Commission **Domibus 5.0.8 (e-Delivery)** Oracle Database schema.
+An enterprise-grade, data-driven anonymization engine built to mask sensitive production data inside the official European Commission **Domibus 5.0.8 (e-Delivery)** Oracle Database schema. It should work at least till 5.1.9 version.
 
 ## Features
 - **Dockerized Environment:** Spins up an Oracle Database 23 Free container pre-configured with the official Domibus schema, components, and partitioning.
@@ -19,16 +19,32 @@ An enterprise-grade, data-driven anonymization engine built to mask sensitive pr
 
 ## Structure
 
+\`\`\`text
 domibus-data-db-anonymization/
-├── .venv/                      # Python environment
-├── scripts/                    # Official Domibus sql installation scripts
-│   ├── 01_oracle-5.1.9.sql
-│   ├── 02_oracle-5.1.9-data.sql
-│   └── 03_oracle-5.1.9-partitioning.sql
-├── docker-compose.yml          # Oracle 23
-├── mapping.json                # anonymization rules (No-Code Config)
-└── anonymizer.py               # Dynamic Python Engine
+├── .venv/                          # Python virtual environment containing 'oracledb'
+├── scripts/                        # Base Domibus SQL installation schemas
+│   ├── 01_oracle-5.0.8.sql        # Domibus 5.0.8 version from https://tinyurl.com/3dc3j2fr
+│   ├── 02_oracle-5.0.8-data.sql
+│   └── 03_oracle-5.0.8-partitioning.sql
+├── docker-compose.yml              # Oracle 23ai Express / Free containers configuration / PROD & ANON DB
+├── .env                            # Core environment variables configuration (HOURS_TO_SYNC, passwords)
+├── mapping.json                    # Custom anonymization mapping profiles (No-Code Config)
+├── anonymizer.py                   # Dynamic Python Engine executing bulk updates & masking
+├── import.sh                       # Seeding utility (Automated tablespace & schema recreation)
+└── run_pipeline.sh                 # Master Orchestrator (Dynamic Par-file setup, Expdp/Impdp, Python trigger)
+\`\`\`
 
+domibus-data-db-anonymization/
+├── .venv/                          # Python virtual environment containing 'oracledb'
+├── scripts/                        # Base Domibus SQL installation schemas
+│   ├── 01_oracle-5.0.8.sql         # Domibus 5.0.8 version from https://tinyurl.com/3dc3j2fr 
+│   ├── 02_oracle-5.0.8-data.sql
+│   └── 03_oracle-5.0.8-partitioning.sql
+├── docker-compose.yml              # Oracle 23ai Express / Free containers configuration / PROD & ANON DB
+├── .env                            # Core environment variables configuration (HOURS_TO_SYNC, passwords)
+├── mapping.json                    # Custom anonymization mapping profiles (No-Code Config)
+├── anonymizer.py                   # Dynamic Python Engine executing bulk updates & masking
+└── run_pipeline.sh                 # Master Orchestrator (Dynamic Par-file setup, Expdp/Impdp, Python trigger)
 
 ## General
 
@@ -94,7 +110,7 @@ and files 02_ and 03_
 ALTER SESSION SET CONTAINER = FREEPDB1;
 ALTER SESSION SET CURRENT_SCHEMA = DOMIBUS_ADMIN;
 
-Testing the db with an external database manager should use these values:
+Testing the prod db with an external database manager should use these values (set port 1522 for the anon db): 
 
     Host: localhost
 
