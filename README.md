@@ -23,21 +23,7 @@ An enterprise-grade, data-driven anonymization engine built to mask sensitive pr
 domibus-data-db-anonymization/
 ├── .venv/                          # Python virtual environment containing 'oracledb'
 ├── scripts/                        # Base Domibus SQL installation schemas
-│   ├── 01_oracle-5.0.8.sql        # Domibus 5.0.8 version from [https://tinyurl.com/3dc3j2fr](https://tinyurl.com/3dc3j2fr)
-│   ├── 02_oracle-5.0.8-data.sql
-│   └── 03_oracle-5.0.8-partitioning.sql
-├── docker-compose.yml              # Oracle 23ai Express / Free containers configuration / PROD & ANON DB
-├── .env                            # Core environment variables configuration (HOURS_TO_SYNC, passwords)
-├── mapping.json                    # Custom anonymization mapping profiles (No-Code Config)
-├── anonymizer.py                   # Dynamic Python Engine executing bulk updates & masking
-├── import.sh                       # Seeding utility (Automated tablespace & schema recreation)
-└── run_pipeline.sh                 # Master Orchestrator (Dynamic Par-file setup, Expdp/Impdp, Python trigger)
-
-
-domibus-data-db-anonymization/
-├── .venv/                          # Python virtual environment containing 'oracledb'
-├── scripts/                        # Base Domibus SQL installation schemas
-│   ├── 01_oracle-5.0.8.sql         # Domibus 5.0.8 version from https://tinyurl.com/3dc3j2fr 
+│   ├── 01_oracle-5.0.8.sql        # Domibus 5.0.8 version from https://tinyurl.com/3dc3j2fr
 │   ├── 02_oracle-5.0.8-data.sql
 │   └── 03_oracle-5.0.8-partitioning.sql
 ├── docker-compose.yml              # Oracle 23ai Express / Free containers configuration / PROD & ANON DB
@@ -45,6 +31,7 @@ domibus-data-db-anonymization/
 ├── mapping.json                    # Custom anonymization mapping profiles (No-Code Config)
 ├── anonymizer.py                   # Dynamic Python Engine executing bulk updates & masking
 └── run_pipeline.sh                 # Master Orchestrator (Dynamic Par-file setup, Expdp/Impdp, Python trigger)
+
 
 ## General
 
