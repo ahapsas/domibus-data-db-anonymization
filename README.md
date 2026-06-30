@@ -31,7 +31,7 @@ domibus-data-db-anonymization/
 ├── mapping.json                    # Custom anonymization mapping profiles (No-Code Config)
 ├── anonymizer.py                   # Dynamic Python Engine executing bulk updates & masking
 └── run_pipeline.sh                 # Master Orchestrator (Dynamic Par-file setup, Expdp/Impdp, Python trigger)
-
+```
 
 ## General
 
