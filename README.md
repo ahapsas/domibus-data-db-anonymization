@@ -1,11 +1,11 @@
 # Domibus e-Delivery Database Anonymization Pipeline
 
-[cite_start]An enterprise-grade, data-driven anonymization engine built to mask sensitive production data inside the official European Commission Domibus 5.0.8 (e-Delivery) Oracle Database schema[cite: 1, 2]. [cite_start]Designed to be completely adaptive, this pipeline maintains compatibility up to version 5.1.9[cite: 3].
+An enterprise-grade, data-driven anonymization engine built to mask sensitive production data inside the official European Commission Domibus 5.0.8 (e-Delivery) Oracle Database schema. Designed to be completely adaptive, this pipeline maintains compatibility up to version 5.1.9.
 
 ## Features
-* [cite_start]**Dockerized Dual Environments**: Spins up two isolated Oracle Database 23ai Free containers representing a mock Production container (`domibus_prod_db`) and a secure Sandbox container (`domibus_anon_db`)[cite: 5, 29, 69, 86].
-* [cite_start]**Dynamic Masking Engine**: Powered completely by a Python execution script driven by a `mapping.json` configuration file, eliminating brittle, hardcoded SQL scripts[cite: 6, 7].
-* [cite_start]**Advanced Masking & Speed**: Utilizes the high-performance `oracledb` Thin Driver to perform rapid relational array bulk updates[cite: 12, 41]. [cite_start]Supports deterministic updates, structural alphanumeric random string generation, background scheduler trimming, and binary payload (BLOB) wiping[cite: 8, 63].
+* **Dockerized Dual Environments**: Spins up two isolated Oracle Database 23ai Free containers representing a mock Production container (`domibus_prod_db`) and a secure Sandbox container (`domibus_anon_db`).
+* **Dynamic Masking Engine**: Powered completely by a Python execution script driven by a `mapping.json` configuration file, eliminating brittle, hardcoded SQL scripts.
+* **Advanced Masking & Speed**: Utilizes the high-performance `oracledb` Thin Driver to perform rapid relational array bulk updates. Supports deterministic updates, structural alphanumeric random string generation, background scheduler trimming, and binary payload (BLOB) wiping.
 
 ---
 
@@ -15,11 +15,7 @@ The pipeline isolates data operations across two independent database environmen
 
 ```text
 [Production DB: Port 1521] ──(expdp data pump)──> [Host File System] ──(impdp target)──> [Sandbox DB: Port 1522] ──(anonymizer.py)──> [Safe Test Data]
-
-## Quick Start
-1. Start the database context:
-   bash
-   docker compose up -d
+```
 
 ## Structure
 
@@ -27,7 +23,7 @@ The pipeline isolates data operations across two independent database environmen
 domibus-data-db-anonymization/
 ├── .venv/                          # Python virtual environment containing 'oracledb'
 ├── scripts/                        # Base Domibus SQL installation schemas
-│   ├── 01_oracle-5.0.8.sql        # Domibus 5.0.8 version from https://tinyurl.com/3dc3j2fr
+│   ├── 01_oracle-5.0.8.sql         # Domibus 5.0.8 version from https://tinyurl.com/3dc3j2fr
 │   ├── 02_oracle-5.0.8-data.sql
 │   └── 03_oracle-5.0.8-partitioning.sql
 ├── docker-compose.yml              # Oracle 23ai Express / Free containers configuration / PROD & ANON DB
@@ -66,25 +62,25 @@ To guarantee that the anonymized database remains fully functional for the appli
 
 ### Docker Container Initialization
 
-We utilize the robust official gvenzl/oracle-free image. A key benefit of this image is its native initialization feature: any SQL or DDL script mounted inside the /container-entrypoint-initdb.d/ folder executes automatically upon container creation.
+We utilize the robust official gvenzl/oracle-free image. A key benefit of this image is its native initialization feature: any SQL script mounted inside the /container-entrypoint-initdb.d/ folder executes automatically upon container creation.
 
 The docker-compose.yml configures:
 
     - sys password
-    - the container name domibus_oracle_db
+    - the container names domibus_prod_db and domibus_anon_db
     - Volume mappings for initialization persistence.
 
-You can monitor the database creation progress via: docker logs -f domibus_oracle_db
+You can monitor the database creation progress via: docker logs -f domibus_prod_db
 
 ### Database preparation
 
-Download the official Domibus sql files from the https://ec.europa.eu/digital-building-blocks/sites/display/DIGITAL/Domibus+database+installation+and+upgrade+scripts . We will need 3 files the :
+Download the official Domibus sql files from the https://ec.europa.eu/digital-building-blocks/sites/display/DIGITAL/Domibus+database+installation+and+upgrade+scripts . We will need the 3 files:
 
 	- 01_oracle-5.0.8.sql 
 	- 02_oracle-5.0.8-data.sql
 	- 03_oracle-5.0.8-partitioning.sql
 
-Note: The downloaded files must be renamed from .ddl to .sql and prefixed with numbers to enforce execution order. (for example the oracle-5.0.8.ddl should be 01_oracle-5.0.8.sql)
+Note: The downloaded files must be renamed from .ddl to .sql and prefixed with numbers to enforce execution order. (for example the oracle-5.0.8.ddl should be 01_oracle-5.0.8.sql and should be executed first)
 
 To route the objects out of the Root Container into the proper local pluggable scope, the scripts are enhanced with session-handling commands.
 
@@ -101,7 +97,7 @@ and files 02_ and 03_
 ALTER SESSION SET CONTAINER = FREEPDB1;
 ALTER SESSION SET CURRENT_SCHEMA = DOMIBUS_ADMIN;
 
-Testing the prod db with an external database manager should use these values (set port 1522 for the anon db): 
+Testing the prod db with an external database manager should use these values (set port 1522 for the anon db the rest are the same): 
 
     Host: localhost
 
@@ -122,7 +118,22 @@ The system operates on a metadata-driven approach. Anonymizer.py reads parsing r
 
 This decouples the structural schema requirements from the pipeline logic, making it fully reusable across different environments or entirely separate database schemas.
 
-### Activate your Python environment & run the pipeline
+## Quick Start
+Start the database context:
+   bash
+   docker compose up -d
 
-    source .venv/bin/activate
-    python anonymizer.py
+### Seed the environment
+
+Import into prod db your real data. 
+
+Note for Real Databases: If you want to run this pipeline against a real, external database instead of the local standalone Docker container, simply open run_pipeline.sh, and update the connection variables for the INT_SYS_PROD_SQL
+
+### Run the Synchronized Masking Pipeline
+
+Execute the master orchestrator to replicate active data partitions across the containers and mask the database sandbox records
+
+chmod +x run_pipeline.sh
+./run_pipeline.sh
+
+Note: To override the default sync window on-the-fly, declare the runtime variable directly before executing: HOURS_TO_SYNC=24 ./run_pipeline.sh . Remember the default sync window is one hour.
