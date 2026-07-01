@@ -39,13 +39,13 @@ def run_anonymization():
     with open("mapping.json", "r", encoding="utf-8") as f:
         config = json.load(f)
         
-    print("🔄 Connecting to Oracle...")
+    print("Connecting to Oracle...")
     connection = oracledb.connect(user=DB_USER, password=DB_PASS, dsn=DB_DSN)
     cursor = connection.cursor()
     
     try:
         # --- 1. EXECUTE TRUNCATES ---
-        print("\n🗑️  Starting Cleanup Process (Truncates/Deletes)...")
+        print("\n Starting Cleanup Process (Truncates/Deletes)...")
         for table in config.get("truncates", []):
             try:
                 if "QRTZ" in table:
@@ -112,7 +112,7 @@ def run_anonymization():
                             set_clauses.append(f"{col_name} = '{col_config['value']}'")
                             
                         elif method == "EMPTY_BLOB":
-                            set_clauses.append(f"{col_name} = UTL_RAW.CAST_TO_RAW('58585858585858585858')")
+                            set_clauses.append(f"{col_name} = UTL_RAW.CAST_TO_RAW('ANONYMOUS')")
 
                     if set_clauses:
                         cursor.execute(f"UPDATE {table_name} SET {', '.join(set_clauses)} WHERE rowid = '{row_id}'")
@@ -122,7 +122,7 @@ def run_anonymization():
                     if col_config["method"] == "STATIC_VALUE":
                         set_clauses.append(f"{col_name} = '{col_config['value']}'")
                     elif col_config["method"] == "EMPTY_BLOB":
-                        set_clauses.append(f"{col_name} = UTL_RAW.CAST_TO_RAW('58585858585858585858')")
+                        set_clauses.append(f"{col_name} = UTL_RAW.CAST_TO_RAW('ANONYMOUS')")
                 
                 if set_clauses:
                     sql = f"UPDATE {table_name} SET {', '.join(set_clauses)}{where_sql}"

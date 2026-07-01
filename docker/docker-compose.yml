@@ -1,5 +1,5 @@
 services:
-  # 1. SIMULATED PRODUCTION DATABASE
+  # 1. PRODUCTION DATABASE
   domibus_prod_db:
     image: gvenzl/oracle-free:latest
     container_name: domibus_prod_db
