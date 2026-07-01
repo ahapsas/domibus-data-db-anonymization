@@ -38,7 +38,7 @@ domibus-data-db-anonymization/
 
 ## General
 
-###  Domibus
+### Domibus
 
 Domibus is the sample implementation of an eDelivery AS4 Access Point maintained by the European Commission. It serves as a foundational building block for secure, reliable, and interoperable data exchange across digital borders in Europe. By providing a standardized gateway for electronic communication, Domibus enables public administrations, businesses, and organizations to connect effortlessly within the European single market.
 
