@@ -16,7 +16,7 @@ The pipeline isolates data operations across two independent database environmen
 ```text
 [Production DB: Port 1521] ──(expdp data pump)──> [Host File System] ──(impdp target)──> [Sandbox DB: Port 1522] ──(anonymizer.py)──> [Safe Test Data]
 ```
-> 🔄 **CI/CD Automation Ready**: This pipeline is built to be easily integrated into orchestration tools like **Jenkins, GitLab CI, or GitHub Actions**. You can schedule it as a weekly cron job to automatically tear down, refresh, and mask the database, ensuring your testing and QA teams always start their week with fresh, production-like, but completely anonymized data.
+> **CI/CD Automation Ready**: This pipeline is built to be easily integrated into orchestration tools like **Jenkins, GitLab CI, or GitHub Actions**. You can schedule it as a weekly cron job to automatically tear down, refresh, and mask the database, ensuring your testing and QA teams always start their week with fresh, production-like, but completely anonymized data.
 
 ## Structure
 
