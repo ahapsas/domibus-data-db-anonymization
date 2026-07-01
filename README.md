@@ -16,7 +16,7 @@ The pipeline isolates data operations across two independent database environmen
 ```text
 [Production DB: Port 1521] ──(expdp data pump)──> [Host File System] ──(impdp target)──> [Sandbox DB: Port 1522] ──(anonymizer.py)──> [Safe Test Data]
 ```
-> **CI/CD Automation Ready**: This pipeline is built to be easily integrated into orchestration tools like **Jenkins, GitLab CI, or GitHub Actions**. You can schedule it as a weekly cron job to automatically tear down, refresh, and mask the database, ensuring your testing and QA teams always start their week with fresh, production-like, but completely anonymized data.
+>   **CI/CD Automation Ready**: This pipeline is built to be easily integrated into orchestration tools like **Jenkins, GitLab CI, or GitHub Actions**. You can schedule it as a weekly cron job to automatically tear down, refresh, and mask the database, ensuring your testing and QA teams always start their week with fresh, production-like, but completely anonymized data.
 
 ## Structure
 
@@ -137,7 +137,7 @@ Start the database context:
 
 ### Seed the environment
 
-Import into prod db your real data. 
+Import into prod db your real data. To populate the local testing container (`domibus_prod_db`) with raw data, use the provided `import.sh` utility. When executed, it will explicitly prompt you for three mandatory parameters: the local directory path of your dump file, the exact `.dmp` filename, and the original source schema name. It automatically transferring the export data into the Docker container, resetting the target `DOMIBUS_ADMIN` user, and performing the Oracle Data Pump import.
 
 Note for Real Databases: If you want to run this pipeline against a real, external database instead of the local standalone Docker container, simply open run_pipeline.sh, and update the connection variables for the INT_SYS_PROD_SQL
 
