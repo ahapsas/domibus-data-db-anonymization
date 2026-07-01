@@ -70,7 +70,11 @@ The docker-compose.yml configures:
     - the container names domibus_prod_db and domibus_anon_db
     - Volume mappings for initialization persistence.
 
-You can monitor the database creation progress via: docker logs -f domibus_prod_db
+You can monitor the database creation progress via: 
+```text
+docker logs -f domibus_prod_db 
+
+```
 
 ### Database preparation
 
@@ -86,19 +90,24 @@ To route the objects out of the Root Container into the proper local pluggable s
 
 File 01_ should contain:
 
+```text
 ALTER SESSION SET CONTAINER = FREEPDB1;
 CREATE USER DOMIBUS_ADMIN IDENTIFIED BY "DomibusPass123";
 GRANT CREATE SESSION, ALTER SESSION, CONNECT, RESOURCE, DBA TO DOMIBUS_ADMIN;
 ALTER USER DOMIBUS_ADMIN QUOTA UNLIMITED ON USERS;
 ALTER SESSION SET CURRENT_SCHEMA = DOMIBUS_ADMIN;
+```
 
 and files 02_ and 03_
 
+```text
 ALTER SESSION SET CONTAINER = FREEPDB1;
 ALTER SESSION SET CURRENT_SCHEMA = DOMIBUS_ADMIN;
+```
 
 Testing the prod db with an external database manager should use these values (set port 1522 for the anon db the rest are the same): 
 
+```text
     Host: localhost
 
     Port: 1521
@@ -110,7 +119,7 @@ Testing the prod db with an external database manager should use these values (s
     Username: DOMIBUS_ADMIN
 
     Password: DomibusPass123
-
+```
 
 ## Metadata-Driven Anonymization Engine
 
@@ -120,8 +129,10 @@ This decouples the structural schema requirements from the pipeline logic, makin
 
 ## Quick Start
 Start the database context:
-   bash
+
+```text   
    docker compose up -d
+```
 
 ### Seed the environment
 
@@ -132,8 +143,10 @@ Note for Real Databases: If you want to run this pipeline against a real, extern
 ### Run the Synchronized Masking Pipeline
 
 Execute the master orchestrator to replicate active data partitions across the containers and mask the database sandbox records
+```text
 
 chmod +x run_pipeline.sh
 ./run_pipeline.sh
+```
 
 Note: To override the default sync window on-the-fly, declare the runtime variable directly before executing: HOURS_TO_SYNC=24 ./run_pipeline.sh . Remember the default sync window is one hour.
