@@ -31,7 +31,9 @@ domibus-data-db-anonymization/
 ├── .env                            # Core environment variables configuration (HOURS_TO_SYNC, passwords)
 ├── mapping.json                    # Custom anonymization mapping profiles (No-Code Config)
 ├── anonymizer.py                   # Dynamic Python Engine executing bulk updates & masking
-└── run_pipeline.sh                 # Master Orchestrator (Dynamic Par-file setup, Expdp/Impdp, Python trigger)
+├── run_pipeline.sh                 # Master Orchestrator (Dynamic Par-file setup, Expdp/Impdp, Python trigger)
+└── scripts
+    └── import.sh                   # Utility to facilitate the import process to prod db
 ```
 
 ## General
