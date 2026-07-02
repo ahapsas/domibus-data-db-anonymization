@@ -22,18 +22,24 @@ The pipeline isolates data operations across two independent database environmen
 
 ```text
 domibus-data-db-anonymization/
-├── .venv/                          # Python virtual environment containing 'oracledb'
-├── scripts/                        # Base Domibus SQL installation schemas
-│   ├── 01_oracle-5.0.8.sql         # Domibus 5.0.8 version sql scripts taken from https://tinyurl.com/3dc3j2fr
-│   ├── 02_oracle-5.0.8-data.sql
-│   └── 03_oracle-5.0.8-partitioning.sql
-├── docker-compose.yml              # Oracle 23 Express / Free containers configuration / PROD & ANON DB
-├── .env                            # Core environment variables configuration (HOURS_TO_SYNC, passwords)
-├── mapping.json                    # Custom anonymization mapping profile
-├── anonymizer.py                   # Dynamic Python Engine executing bulk updates & masking
-├── run_pipeline.sh                 # Master Orchestrator (Dynamic Par-file setup, Expdp/Impdp, Python trigger)
-└── scripts
-    └── import.sh                   # Utility to facilitate the import process to prod db
+├── .venv/                                          # Python virtual environment containing 'oracledb'            
+├── .env                                            # Core environment variables configuration (HOURS_TO_SYNC, passwords)
+├── anonymizer.py                                   # Dynamic Python Engine executing bulk updates & masking
+├── docker
+│   ├── docker-compose.yml                          # Oracle 23 Express / Free containers configuration / PROD & ANON DB
+│   ├── exports                                     # Containing dump files
+│   └── scripts                                     # Domibus 5.0.8 sql scripts taken from https://tinyurl.com/3dc3j2fr
+│       ├── 01_oracle-5.0.8.sql
+│       ├── 02_oracle-5.0.8-data.sql
+│       └── 03_oracle-5.0.8-partitioning.sql
+├── LICENSE
+├── mapping.json                                    # Custom anonymization mapping profile
+├── README.md
+├── run_pipeline.sh                                 # Master Orchestrator (Par-file setup, Expdp/Impdp, Python trigger)
+├── scripts
+│   ├── export.sh                                   # Utility to export masked dump file
+│   └── import.sh                                   # Utility to facilitate the import process to prod db
+└── validator.py                                    # Dynamic Python Engine producing validation report
 ```
 
 ## General
