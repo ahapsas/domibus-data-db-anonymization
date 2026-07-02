@@ -14,7 +14,7 @@ import oracledb
 
 DB_USER = "DOMIBUS_ADMIN"
 DB_PASS = "DomibusPass123"
-DB_DSN = "localhost:1521/FREEPDB1"
+DB_DSN = "localhost:1522/FREEPDB1"  # Port 1522 connects straight to your Sandbox Container
 
 def generate_random_string(length):
     choices_list = random.choices(string.ascii_uppercase + string.digits, k=length)
@@ -39,12 +39,12 @@ def run_anonymization():
     with open("mapping.json", "r", encoding="utf-8") as f:
         config = json.load(f)
         
-    print("Connecting to Oracle...")
+    print("Connecting to Sandbox Database Context...")
     connection = oracledb.connect(user=DB_USER, password=DB_PASS, dsn=DB_DSN)
     cursor = connection.cursor()
     
     try:
-        # --- 1. EXECUTE TRUNCATES ---
+        # --- 1. EXECUTE CLEANUP PROCESS (TRUNCATES / DELETES) ---
         print("\n Starting Cleanup Process (Truncates/Deletes)...")
         for table in config.get("truncates", []):
             try:
@@ -56,7 +56,7 @@ def run_anonymization():
             except Exception as e:
                 print(f"  ↳ Skipping {table}: {e}")
 
-        # --- 2. EXECUTE TABLE PROCESSING ---
+        # --- 2. EXECUTE TABLE PROCESSING ENGINE ---
         for table_name, table_config in config.get("tables", {}).items():
             print(f"\n Processing table: {table_name}")
             
@@ -138,6 +138,7 @@ def run_anonymization():
     finally:
         cursor.close()
         connection.close()
+        print(" Database session disconnected safely.")
 
 if __name__ == "__main__":
     run_anonymization()

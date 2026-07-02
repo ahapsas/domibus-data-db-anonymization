@@ -8,7 +8,6 @@ services:
     environment:
       - ORACLE_PASSWORD=ProdSysPass123
     volumes:
-      # Relative to where docker-compose.yml lives (inside docker/ folder)
       - ./scripts:/container-entrypoint-initdb.d
     restart: always
 
@@ -20,5 +19,8 @@ services:
       - "1522:1521"
     environment:
       - ORACLE_PASSWORD=AnonSysPass123
-    # No needed volumes, it starts fresh and receives data via impdp
+    volumes:
+      - ./scripts:/container-entrypoint-initdb.d
+      # Maps local exports folder to a reliable, custom directory path
+      - ./exports:/opt/oracle/exports
     restart: always
