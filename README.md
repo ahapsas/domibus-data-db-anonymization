@@ -22,24 +22,24 @@ The pipeline isolates data operations across two independent database environmen
 
 ```text
 domibus-data-db-anonymization/
-├── .venv/                                          # Python virtual environment containing 'oracledb'            
+├── .venv/                                          # Python virtual environment containing 'oracledb'
 ├── .env                                            # Core environment variables configuration (HOURS_TO_SYNC, passwords)
-├── anonymizer.py                                   # Dynamic Python Engine executing bulk updates & masking
+├── anonymizer.py                                   # Python script that applies masking rules to the anonymized database
 ├── docker
-│   ├── docker-compose.yml                          # Oracle 23 Express / Free containers configuration / PROD & ANON DB
-│   ├── exports                                     # Containing dump files
-│   └── scripts                                     # Domibus 5.0.8 sql scripts taken from https://tinyurl.com/3dc3j2fr
+│   ├── docker-compose.yml                          # Oracle 23 Express / Free container definitions for PROD and ANON DB
+│   ├── exports                                     # Output folder for exported anonymized dump files
+│   └── scripts                                     # Domibus 5.0.8 SQL installation scripts used to initialize the database
 │       ├── 01_oracle-5.0.8.sql
 │       ├── 02_oracle-5.0.8-data.sql
 │       └── 03_oracle-5.0.8-partitioning.sql
-├── LICENSE
-├── mapping.json                                    # Custom anonymization mapping profile
-├── README.md
-├── run_pipeline.sh                                 # Master Orchestrator (Par-file setup, Expdp/Impdp, Python trigger)
+├── LICENSE                                         # Project license
+├── mapping.json                                    # Custom anonymization mapping profile used by anonymizer.py
+├── README.md                                       # Project documentation
+├── run_pipeline.sh                                 # Master orchestrator for export/import and masking workflow
 ├── scripts
-│   ├── export.sh                                   # Utility to export masked dump file
-│   └── import.sh                                   # Utility to facilitate the import process to prod db
-└── validator.py                                    # Dynamic Python Engine producing validation report
+│   ├── export.sh                                   # Utility to export the masked dump file from the anon database
+│   └── import.sh                                   # Utility to import a dump file into the prod database container
+└── validator.py                                    # Python script that generates a validation report
 ```
 
 ## General
