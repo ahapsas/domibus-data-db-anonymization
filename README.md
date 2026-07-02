@@ -25,6 +25,7 @@ domibus-data-db-anonymization/
 ├── .venv/                                          # Python virtual environment containing 'oracledb'
 ├── .env                                            # Core environment variables configuration (HOURS_TO_SYNC, passwords)
 ├── anonymizer.py                                   # Python script that applies masking rules to the anonymized database
+├── Diagram.png                                     # Architecture diagram showing the data flow and container layout
 ├── docker
 │   ├── docker-compose.yml                          # Oracle 23 Express / Free container definitions for PROD and ANON DB
 │   ├── exports                                     # Output folder for exported anonymized dump files
