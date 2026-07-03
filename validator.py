@@ -59,7 +59,7 @@ def generate_html_report():
     </head>
     <body>
         <h1> Domibus Anonymization Audit</h1>
-        <h2> Antonios Chapsas Devops - 2026</h2>
+        <h2> Antonios Chapsas Devops - (c) 2026</h2>
         <div class="timestamp">Generated on: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</div>
         
         <h2>Table Truncation Status</h2>

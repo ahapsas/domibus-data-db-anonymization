@@ -130,7 +130,7 @@ def run_anonymization():
                     print(f"  ↳ Bulk Updated {cursor.rowcount} rows.")
                     
         connection.commit()
-        print("\n THE ANONYMIZATION PROCESS COMPLETED SUCCESSFULLY!")
+        print("\n THE ANONYMIZATION PROCESS COMPLETED SUCCESSFULLY!!")
 
     except Exception as e:
         print(f" Critical Error: {e}")
