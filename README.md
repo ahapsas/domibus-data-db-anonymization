@@ -40,7 +40,7 @@ domibus-data-db-anonymization/
 ├── scripts
 │   ├── export.sh                                   # Utility to export the masked dump file from the anon database
 │   └── import.sh                                   # Utility to import a dump file into the prod database container
-└── validator.py                                    # Python script that generates a validation report
+└── validator.py                                    # Python script that generates a validation report, produces validation_report.html
 ```
 
 ## General
@@ -94,7 +94,7 @@ Download the official Domibus sql files from the https://ec.europa.eu/digital-bu
 	- 02_oracle-5.0.8-data.sql
 	- 03_oracle-5.0.8-partitioning.sql
 
-Note: The downloaded files must be renamed from .ddl to .sql and prefixed with numbers to enforce execution order. (for example the oracle-5.0.8.ddl should be 01_oracle-5.0.8.sql and should be executed first)
+Note: The downloaded files must be renamed from .ddl to .sql and prefixed with numbers to enforce execution order. (for example the original oracle-5.0.8.ddl file should be renamed to 01_oracle-5.0.8.sql and should be executed first)
 
 To route the objects out of the Root Container into the proper local pluggable scope, the scripts are enhanced with session-handling commands.
 
@@ -159,7 +159,11 @@ chmod +x run_pipeline.sh
 ./run_pipeline.sh
 ```
 
-Note: To override the default sync window on-the-fly, declare the runtime variable directly before executing: HOURS_TO_SYNC=24 ./run_pipeline.sh . Remember the default sync window is one hour.
+Note: To override the default sync window on-the-fly, declare the runtime variable directly before executing: 
+```text
+HOURS_TO_SYNC=24 ./run_pipeline.sh . 
+```
+Remember the default sync window is one hour.
 
 ### Anonymized dump file
 
