@@ -14,7 +14,7 @@ import oracledb
 
 DB_USER = "DOMIBUS_ADMIN"
 DB_PASS = "DomibusPass123"
-DB_DSN = "localhost:1522/FREEPDB1"  # Port 1522 connects straight to your Sandbox Container
+DB_DSN = "domibus_anon_db:1521/FREEPDB1"  # Port 1522 connects straight to your Sandbox Container
 
 def generate_random_string(length):
     choices_list = random.choices(string.ascii_uppercase + string.digits, k=length)

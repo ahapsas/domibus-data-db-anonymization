@@ -1,0 +1,18 @@
+-- scripts/init_domibus.sql
+ALTER SESSION SET CONTAINER = FREEPDB1;
+
+-- Create Domibus Admin user if it doesn't exist
+DECLARE
+  v_count NUMBER;
+BEGIN
+  SELECT count(*) INTO v_count FROM dba_users WHERE username = 'DOMIBUS_ADMIN';
+  IF v_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE USER DOMIBUS_ADMIN IDENTIFIED BY DomibusPass123';
+  END IF;
+END;
+/
+
+-- Grant necessary privileges
+GRANT CONNECT, RESOURCE, DBA TO DOMIBUS_ADMIN;
+GRANT UNLIMITED TABLESPACE TO DOMIBUS_ADMIN;
+ALTER USER DOMIBUS_ADMIN QUOTA UNLIMITED ON USERS;

@@ -1,0 +1,55 @@
+services:
+  # 1. PRODUCTION DATABASE
+  domibus_prod_db:
+    image: gvenzl/oracle-free:latest
+    container_name: domibus_prod_db
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PASSWORD=ProdSysPass123
+    volumes:
+      - ./scripts:/container-entrypoint-initdb.d
+    networks:
+      - app-network
+    restart: always
+
+  # 2. ANONYMIZATION SANDBOX DATABASE
+  domibus_anon_db:
+    image: gvenzl/oracle-free:latest
+    container_name: domibus_anon_db
+    ports:
+      - "1522:1521"
+    environment:
+      - ORACLE_PASSWORD=AnonSysPass123
+    volumes:
+      # Maps your scripts folder so Oracle runs them on first boot
+      - ./scripts:/container-entrypoint-initdb.d
+      # Maps your exports folder so Data Pump can access the .dmp files
+      - ./exports:/opt/oracle/exports
+    networks:
+      - app-network
+    restart: always
+  
+  # 3. WEB INTERFACE
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - app-network
+
+  # 4. PYTHON API BACKEND
+  api:
+    build: .
+    volumes:
+      - .:/app
+    command: python3 app.py
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Domibus Anonymization</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #f4f4f9; }
+        h1 { color: #333; }
+        button { padding: 12px 24px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:disabled { background-color: #cccccc; cursor: not-allowed; }
+        #reportArea { margin-top: 20px; }
+        a { color: #007bff; text-decoration: none; font-weight: bold; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Domibus Anonymization</h1>
+    <button id="runBtn" onclick="startPipeline()">Start Anonymization...</button>
+    <div id="reportArea">
+        <br><a href="/validation_report.html" target="_blank">View Latest Validation Report</a>
+    </div>
+
+    <script>
+    async function startPipeline() {
+        const btn = document.getElementById('runBtn');
+        btn.innerText = "Running pipeline... please wait...";
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch('/start-anonymization', { method: 'POST' });
+            const data = await res.json();
+            if (res.ok) {
+                alert("The anonymization process finished successfully!");
+            } else {
+                alert("Error occurred: " + (data.message || "Unknown error"));
+            }
+        } catch (err) {
+            alert("Network or server error occurred.");
+            console.error(err);
+        } finally {
+            btn.innerText = " Start Anonymization";
+            btn.disabled = false;
+        }
+    }
+    </script>
+</body>
+</html>

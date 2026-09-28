@@ -3,8 +3,9 @@
 An data-driven anonymization engine built, to anonymize sensitive production data inside the official European Commission Domibus 5.0.8 (e-Delivery) Oracle Database schema. Designed to be completely adaptive, this pipeline maintains compatibility up to version 5.1.9.
 
 ## Features
-* **Dockerized Dual Environment**: Starts up two isolated Oracle Database 23 free containers representing a mock Production container (`domibus_prod_db`) and a secure Sandbox container (`domibus_anon_db`).
-* **Dynamic Masking Engine**: A python script reads the `mapping.json` configuration file creating the right sql commands, eliminating  hardcoded SQL scripts.
+**Dockerized Dual Environment**: Starts up two isolated Oracle Database 23 Free containers representing a mock Production container (`domibus_prod_db`) and a secure Sandbox container (`domibus_anon_db`).
+* **Fully Automated Initialization**: Automatically provisions the `DOMIBUS_ADMIN` user, schemas, and table structures out-of-the-box via mounted initialization scripts on first boot.
+* **Dynamic Masking Engine**: A Python script reads the `mapping.json` configuration file, dynamically creating the right SQL commands and eliminating hardcoded scripts.
 * **Advanced Masking & Speed**: Uses the `oracledb` Thin Driver to perform rapid bulk updates. Supports deterministic updates, structural alphanumeric random string generation, and binary payload (BLOB) wiping.
 
 ---
@@ -22,25 +23,27 @@ The pipeline isolates data operations across two independent database environmen
 
 ```text
 domibus-data-db-anonymization/
-├── .venv/                                          # Python virtual environment containing 'oracledb'
-├── .env                                            # Core environment variables configuration (HOURS_TO_SYNC, passwords)
 ├── anonymizer.py                                   # Python script that applies masking rules to the anonymized database
+├── app.py                                          # Flask backend API serving the web dashboard
 ├── Diagram.png                                     # Architecture diagram showing the data flow and container layout
-├── docker
-│   ├── docker-compose.yml                          # Oracle 23 Express / Free container definitions for PROD and ANON DB
-│   ├── exports                                     # Output folder for exported anonymized dump files
-│   └── scripts                                     # Domibus 5.0.8 SQL installation scripts used to initialize the database
-│       ├── 01_oracle-5.0.8.sql
-│       ├── 02_oracle-5.0.8-data.sql
-│       └── 03_oracle-5.0.8-partitioning.sql
+├── docker-compose.yml                              # Oracle Free container definitions for PROD and ANON DB, plus Nginx & API
+├── Dockerfile                                      # Container definition for the Flask API and Python environment
+├── export.sh                                       # Utility to export the masked dump file from the anon database
+├── exports/                                        # Output folder for exported anonymized dump files
+├── import.sh                                       # Utility to import a dump file into the container via Data Pump
+├── index.html                                      # Web dashboard interface for triggering the pipeline
 ├── LICENSE                                         # Project license
 ├── mapping.json                                    # Custom anonymization mapping profile used by anonymizer.py
+├── nginx.conf                                      # Nginx reverse proxy configuration for the web UI and API
 ├── README.md                                       # Project documentation
 ├── run_pipeline.sh                                 # Master orchestrator for export/import and masking workflow
-├── scripts
-│   ├── export.sh                                   # Utility to export the masked dump file from the anon database
-│   └── import.sh                                   # Utility to import a dump file into the prod database container
-└── validator.py                                    # Python script that generates a validation report, produces validation_report.html
+├── scripts/                                        # Pure SQL installation and initialization Domibus scripts executed automatically on container boot
+│   ├── 01_oracle-5.0.8.sql
+│   ├── 02_oracle-5.0.8-data.sql
+│   ├── 03_oracle-5.0.8-partitioning.sql
+│   └── 04_init_domibus.sql                         # Automatically provisions the DOMIBUS_ADMIN user and permissions
+├── validation_report.html                          # Generated HTML validation report comparing data states
+└── validator.py                                    # Python script that generates the validation report
 ```
 
 ## General
@@ -78,7 +81,7 @@ The docker-compose.yml configures:
 
     - sys password
     - the container names domibus_prod_db and domibus_anon_db
-    - Volume mappings for initialization persistence.
+    - Volume mappings for initialization persistence and Data Pump directory access (./exports).
 
 You can monitor the database creation progress via: 
 ```text
@@ -130,6 +133,7 @@ Testing the prod db with an external database manager should use these values (s
 
     Password: DomibusPass123
 ```
+A dedicated automated initialization script (04_init_domibus.sql) is included in the scripts/ directory to seamlessly guarantee that DOMIBUS_ADMIN and permissions are set up on first boot.
 
 ## Metadata-Driven Anonymization Engine
 
@@ -138,10 +142,10 @@ The system operates on a metadata-driven approach. Anonymizer.py reads parsing r
 This decouples the structural schema requirements from the pipeline logic, making it fully reusable across different environments or entirely separate database schemas.
 
 ## Quick Start
-Start the database context:
+Start the database and API context:
 
 ```text   
-   docker compose up -d
+   docker compose up -d --build
 ```
 
 ### Seed the environment
@@ -179,5 +183,32 @@ chmod +x export.sh
 You can run the validation script to generate an HTML report comparing the data state before and after anonymization.
 
 ```text
-python validation.py
+python validator.py
 ```
+
+---
+
+## Web UI & REST API Dashboard
+
+The pipeline features an integrated lightweight web dashboard served via **Nginx** and powered by a **Flask API backend** (`app.py`), enabling zero-touch execution directly from your browser.
+
+### Architecture & Routing
+* **Web UI (`index.html`)**: Served on port `8080`, providing a clean control center with an interactive trigger button and direct report access.
+* **Nginx Reverse Proxy (`nginx.conf`)**: Directs HTTP traffic, routing UI requests cleanly to the backend services.
+* **Flask API (`app.py`)**: Listens on internal port `5000` to orchestrate pipeline execution and serve validation reports.
+
+### Available Endpoints
+* `GET /`: Serves the main web dashboard interface (`index.html`).
+* `POST /start-anonymization`: Triggers the master orchestrator (`run_pipeline.sh`) asynchronously and returns status logs.
+* `GET /validation_report.html`: Dynamically serves the latest generated HTML audit report.
+
+### Accessing the Dashboard
+1. Spin up the entire containerized stack:
+   ```text
+   docker compose up -d --build
+
+### Open your browser and navigate to:   
+
+* http://localhost:8080
+
+* Click Start Anonymization to execute the pipeline live, and click View Latest Validation Report to inspect truncation and masking results instantly.

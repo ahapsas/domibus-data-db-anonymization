@@ -15,3 +15,6 @@ Thumbs.db
 full.par
 *.log
 *.dmp
+
+# HTML validation report
+validation_report.html
