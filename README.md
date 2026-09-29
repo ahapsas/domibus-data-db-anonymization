@@ -135,6 +135,31 @@ Testing the prod db with an external database manager should use these values (s
 ```
 A dedicated automated initialization script (04_init_domibus.sql) is included in the scripts/ directory to seamlessly guarantee that DOMIBUS_ADMIN and permissions are set up on first boot.
 
+## Configuration (`.env`)
+
+Create a `.env` file in the root directory of the project based on the following template. This file configures both the production and anonymization sandbox database connections and container hostnames.
+
+```env
+# Database Credentials & Core Settings
+DB_USER=DOMIBUS_ADMIN
+DB_PASS=DomibusPass123
+PDB_NAME=FREEPDB1
+
+# Sync & Port Configuration
+HOURS_TO_SYNC=1
+ANON_PORT=1522
+
+# Docker Internal Network Hosts (Required for containerized execution)
+PROD_DB_HOST=domibus_prod_db
+ANON_DB_HOST=domibus_anon_db
+```
+* Variable Reference:
+
+    DB_USER: The Oracle schema user (default: DOMIBUS_ADMIN).
+    DB_PASS: Password for the database schema.
+    PDB_NAME: The Oracle Pluggable Database name (e.g., FREEPDB1).
+    PROD_DB_HOST / ANON_DB_HOST: Docker Compose service names used by internal Python scripts and validation tools to route traffic across containers.
+
 ## Metadata-Driven Anonymization Engine
 
 The system operates on a metadata-driven approach. Anonymizer.py reads parsing rules out of mapping.json, dynamically builds optimized DML/DDL statements, and executes them over an active database transaction window.
