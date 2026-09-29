@@ -153,12 +153,12 @@ ANON_PORT=1522
 PROD_DB_HOST=domibus_prod_db
 ANON_DB_HOST=domibus_anon_db
 ```
-* Variable Reference:
+### Variable Reference:
 
-    DB_USER: The Oracle schema user (default: DOMIBUS_ADMIN).
-    DB_PASS: Password for the database schema.
-    PDB_NAME: The Oracle Pluggable Database name (e.g., FREEPDB1).
-    PROD_DB_HOST / ANON_DB_HOST: Docker Compose service names used by internal Python scripts and validation tools to route traffic across containers.
+DB_USER: The Oracle schema user (default: DOMIBUS_ADMIN).
+DB_PASS: Password for the database schema.
+PDB_NAME: The Oracle Pluggable Database name (e.g., FREEPDB1).
+PROD_DB_HOST / ANON_DB_HOST: Docker Compose service names used by internal Python scripts and validation tools to route traffic across containers.
 
 ## Metadata-Driven Anonymization Engine
 
