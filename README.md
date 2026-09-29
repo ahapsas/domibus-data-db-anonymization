@@ -183,7 +183,7 @@ chmod +x export.sh
 You can run the validation script to generate an HTML report comparing the data state before and after anonymization.
 
 ```text
-python validator.py
+docker compose exec api python3 anonymizer.py
 ```
 
 ---
@@ -212,3 +212,24 @@ The pipeline features an integrated lightweight web dashboard served via **Nginx
 * http://localhost:8080
 
 * Click Start Anonymization to execute the pipeline live, and click View Latest Validation Report to inspect truncation and masking results instantly.
+
+### Managing Exported Anonymized Dumps
+
+When you execute `export.sh`, Oracle Data Pump exports the schema and places the dump file inside a system-generated globally unique identifier (GUID) subdirectory within the container's volume (e.g., `/opt/oracle/exports/<GUID>/domibus_anonymized_sandbox.dmp`). 
+
+The `export.sh` script automatically handles this by:
+1. Flattening the directory structure so the dump file is moved directly to the root of your host's `./exports/` folder.
+2. Fixing OS-level permissions so the file is fully accessible and ready for extraction or deployment.
+
+You can find your final, clean anonymized dump file locally at:
+```text
+./exports/domibus_anonymized_sandbox.dmp
+```
+
+### Quick Tip: How to Find Your Original Schema Name for `import.sh`
+
+When running `./import.sh`, the script prompts you for the **Original schema name** (`SRC_SCHEMA`) so it can correctly map it to `DOMIBUS_ADMIN` via Oracle's Data Pump `REMAP_SCHEMA` parameter. 
+
+If you forget or aren't sure what schema name was used inside your `.dmp` file, you can quickly inspect the file's contents without importing it by running an Oracle Data Pump index query, or simply check the export log file that came with your dump. 
+
+Typically, for standard Domibus installations or custom exports, this is your production schema name (e.g., `DOMIBUS_ADMIN`, `PRODUCTION_USER`, or your custom database username).

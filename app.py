@@ -9,8 +9,9 @@ def start_anonymization():
     try:
         print("-> Triggering pipeline execution...")
         # Run the shell script and capture both stdout and stderr
+        # Using 'bash' explicitly to avoid any executable permission issues
         result = subprocess.run(
-            ['./run_pipeline.sh'], 
+            ['bash', './run_pipeline.sh'], 
             capture_output=True, 
             text=True, 
             check=True
@@ -33,6 +34,7 @@ def get_report():
     if not os.path.exists(report_path):
         print("-> Validation report not found. Generating on the fly...")
         try:
+            # Fixed the stray comma syntax error here
             subprocess.run(['python3', 'validator.py'], check=True)
         except Exception as e:
             return f"Validation report not found and failed to generate automatically: {str(e)}", 500
