@@ -233,3 +233,10 @@ When running `./import.sh`, the script prompts you for the **Original schema nam
 If you forget or aren't sure what schema name was used inside your `.dmp` file, you can quickly inspect the file's contents without importing it by running an Oracle Data Pump index query, or simply check the export log file that came with your dump. 
 
 Typically, for standard Domibus installations or custom exports, this is your production schema name (e.g., `DOMIBUS_ADMIN`, `PRODUCTION_USER`, or your custom database username).
+
+### Contact me
+
+You may contact me if you find any typos, errors, or other issues
+https://www.linkedin.com/in/antonis-hapsas-devops/
+
+I will be glad hearing from you :)
