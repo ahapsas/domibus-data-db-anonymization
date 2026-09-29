@@ -183,7 +183,7 @@ chmod +x export.sh
 You can run the validation script to generate an HTML report comparing the data state before and after anonymization.
 
 ```text
-docker compose exec api python3 anonymizer.py
+docker compose exec api python3 validator.py
 ```
 
 ---
