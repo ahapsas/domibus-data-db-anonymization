@@ -114,7 +114,7 @@ docker exec -i domibus_anon_db impdp \"$IMPDP_CONN AS SYSDBA\" DUMPFILE="$DMP_FI
 
 # --- STEP 5: EXECUTE PYTHON ANONYMIZATION PIPELINE ---
 echo "Triggering Python Anonymization Engine on Host Port $ANON_PORT..."
-cd docker
+#cd docker
 
 if [ -d ".venv" ]; then
     source .venv/bin/activate
@@ -125,7 +125,7 @@ export DB_TARGET_USER=$DB_USER
 export DB_TARGET_PASS=$DB_PASS
 export DB_TARGET_PDB=$PDB_NAME
 
-python anonymizer.py
+docker compose exec api python3 anonymizer.py
 
 cd ..
 

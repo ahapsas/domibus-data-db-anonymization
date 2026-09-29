@@ -2,11 +2,13 @@ import json
 import oracledb
 from datetime import datetime
 
-# Database Connection Details
-PROD_DSN = "localhost:1521/FREEPDB1"
-ANON_DSN = "localhost:1522/FREEPDB1"
-DB_USER = "DOMIBUS_ADMIN"
-DB_PASS = "DomibusPass123"
+import os
+
+# Database Connection Details (supports both container network and host execution)
+PROD_DSN = os.getenv("PROD_DSN", "domibus_prod_db:1521/FREEPDB1")
+ANON_DSN = os.getenv("ANON_DSN", "domibus_anon_db:1521/FREEPDB1")
+DB_USER = os.getenv("DB_USER", "DOMIBUS_ADMIN")
+DB_PASS = os.getenv("DB_PASS", "DomibusPass123")
 
 def generate_html_report():
     print(" Starting Data Validation Report...")

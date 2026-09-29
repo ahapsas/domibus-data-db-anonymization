@@ -28,10 +28,19 @@ def start_anonymization():
 @app.route('/validation_report.html', methods=['GET'])
 def get_report():
     report_path = 'validation_report.html'
+    
+    # If the report doesn't exist, try generating it automatically on-the-fly
+    if not os.path.exists(report_path):
+        print("-> Validation report not found. Generating on the fly...")
+        try:
+            subprocess.run(['python3', 'validator.py'], check=True)
+        except Exception as e:
+            return f"Validation report not found and failed to generate automatically: {str(e)}", 500
+
     if os.path.exists(report_path):
         return send_from_directory('.', report_path)
     else:
-        return "Validation report not found yet. Please run the pipeline or generate the report first.", 404
+        return "Validation report could not be generated.", 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
